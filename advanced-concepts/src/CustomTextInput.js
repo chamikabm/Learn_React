@@ -13,6 +13,7 @@ class CustomTextInput extends React.Component {
     // Note: we're accessing "current" to get the DOM node
     this.textInput.current.focus();
 
+    //We can access the this.textInput.current.value to get the input values through the ref we created.
     console.log(this.textInput.current.value);
   }
 
