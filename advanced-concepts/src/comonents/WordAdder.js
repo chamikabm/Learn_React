@@ -11,10 +11,9 @@ class WordAdder extends React.Component {
   }
 
   handleClick() {
-    // This section is bad style and causes a bug
-    const words = this.state.words;
-    words.push('marklar');
-    this.setState({words: words});
+    this.setState(state => ({
+      words: state.words.concat(['marklar'])
+    }));
   }
 
   render() {
