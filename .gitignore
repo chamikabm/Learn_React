@@ -1,3 +1,4 @@
 .idea
 *.iml
 advanced-concepts/node_modules
+redux-concepts/node_modules
