@@ -6,6 +6,7 @@ import './index.css';
 // import * as serviceWorker from './serviceWorker';
 
 const counter = (state = 0, action) => {
+  console.log('AA', state);
   switch(action.type) {
     case 'INCREMENT':
       return state + 1;
