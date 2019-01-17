@@ -1,22 +1,67 @@
-// import React from 'react';
-// import ReactDOM from 'react-dom';
-// import { createStore } from 'redux';
-import './index.css';
-// import App from './App';
-// import * as serviceWorker from './serviceWorker';
+const todo = (state, action) => {
+  switch (action.type) {
+    case 'ADD_TODO':
+      return {
+        id: action.id,
+        text: action.text,
+        completed: false
+      };
+    case 'TOGGLE_TODO':
+      if (state.id !== action.id) {
+        return state;
+      }
 
-const counter = (state = 0, action) => {
-  console.log('AA', state);
-  switch(action.type) {
-    case 'INCREMENT':
-      return state + 1;
-    case 'DECREMENT':
-      return state-1;
+      return {
+        ...state,
+        completed: !state.completed
+      };
     default:
       return state;
   }
 };
 
+const todos = (state = [], action) => {
+  switch (action.type) {
+    case 'ADD_TODO':
+      return [
+        ...state,
+        todo(undefined, action)
+      ];
+    case 'TOGGLE_TODO':
+      return state.map(t => todo(t, action));
+    default:
+      return state;
+  }
+};
+
+const visibilityFilter = (
+  state = 'SHOW_ALL',
+  action
+) => {
+  switch (action.type) {
+    case 'SET_VISIBILITY_FILTER':
+      return action.filter;
+    default:
+      return state;
+  }
+};
+
+const combineReducers = (reducers) => {
+  return (state = {}, action) => {
+    return Object.keys(reducers).reduce(
+      (nextState, key) => {
+        nextState[key] = reducers[key](
+          state[key],
+          action
+        );
+        return nextState;
+      },
+      {}
+    );
+  };
+};
+
+// Create the store from the scratch.
 const createStore = (reducer) => {
 
   let state;
@@ -49,26 +94,51 @@ const createStore = (reducer) => {
   }
 };
 
-const store = createStore(counter);
-
-const render = () => {
-  document.body.innerText = store.getState();
-};
-
-store.subscribe(() => {
-  render();
+const todoApp = combineReducers({
+  todos,
+  visibilityFilter
 });
 
-// Used to render the initial state.
-render();
+const store = createStore(todoApp);
 
-document.addEventListener('click', () => {
-  store.dispatch({ type: 'INCREMENT' });
+console.log('Initial state:');
+console.log(store.getState());
+console.log('--------------');
+
+console.log('Dispatching ADD_TODO.');
+store.dispatch({
+  type: 'ADD_TODO',
+  id: 0,
+  text: 'Learn Redux'
 });
+console.log('Current state:');
+console.log(store.getState());
+console.log('--------------');
 
-// ReactDOM.render(<App />, document.getElementById('root'));
+console.log('Dispatching ADD_TODO.');
+store.dispatch({
+  type: 'ADD_TODO',
+  id: 1,
+  text: 'Go shopping'
+});
+console.log('Current state:');
+console.log(store.getState());
+console.log('--------------');
 
-// If you want your app to work offline and load faster, you can change
-// unregister() to register() below. Note this comes with some pitfalls.
-// Learn more about service workers: http://bit.ly/CRA-PWA
-// serviceWorker.unregister();
+console.log('Dispatching TOGGLE_TODO.');
+store.dispatch({
+  type: 'TOGGLE_TODO',
+  id: 0
+});
+console.log('Current state:');
+console.log(store.getState());
+console.log('--------------');
+
+console.log('Dispatching SET_VISIBILITY_FILTER');
+store.dispatch({
+  type: 'SET_VISIBILITY_FILTER',
+  filter: 'SHOW_COMPLETED'
+});
+console.log('Current state:');
+console.log(store.getState());
+console.log('--------------');
